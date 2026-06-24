@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+  </head>
+  <div class="container">
+  <div>
+    <h1>E-com Panel</h1>
+    <form>
+      <label for="item">List Your Item</label>
+      <input placeholder="Enter your item" name="item" id="item" />
+      <label for="category">Item Category</label>
+      <select name="category" id="category">
+        <option value="Food">Food</option>
+        <option value="Skin-Care">Skin Care</option>
+        <option value="Electronic">Electronic</option>
+      </select>
+      <label for="price">Item Price</label>
+      <input placeholder="Enter items Price" name="price" id="price" />
+
+      <button onclick="handleListItem(event)" id="button">Submit</button>
+    </form>
+
+    <div class="list-area">
+      <div class="category-card">
+        <h2>Electronic Items</h2>
+        <ul id="Electronic-items-list"></ul>
+      </div>
+
+      <div class="category-card">
+        <h2>Food Items</h2>
+        <ul id="Food-items-list"></ul>
+      </div>
+
+      <div class="category-card">
+        <h2>Skin Care Items</h2>
+        <ul id="skin-care-list"></ul>
+      </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

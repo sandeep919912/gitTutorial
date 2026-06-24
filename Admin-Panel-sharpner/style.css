@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body{
+    min-height: 100vh;
+    background: linear-gradient(
+        135deg,
+        #0f172a,
+        #1e293b,
+        #334155
+    );
+    color: white;
+    padding: 40px 20px;
+}
+
+h1{
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+form{
+    max-width: 700px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 30px;
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+label{
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+input,
+select{
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.12);
+    color: white;
+    font-size: 1rem;
+}
+
+input::placeholder{
+    color: rgba(255,255,255,0.6);
+}
+
+select option{
+    color: black;
+}
+
+#button{
+    margin-top: 10px;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+
+    background: linear-gradient(
+        135deg,
+        #3b82f6,
+        #8b5cf6
+    );
+
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+
+    transition: all 0.3s ease;
+}
+
+#button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(59,130,246,0.35);
+}
+
+.delete-btn{
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #ef4444;
+    color: white;
+}
+
+.delete-btn:hover{
+    opacity: 0.9;
+}
+.list-area{
+    max-width: 1200px;
+    margin: 50px auto 0;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+    gap: 25px;
+}
+
+.list-area h2{
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+#Electronic-items-list,
+#Food-items-list,
+#skin-care-list{
+    list-style: none;
+    min-height: 250px;
+
+    padding: 20px;
+    border-radius: 18px;
+
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255,255,255,0.1);
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+li{
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.08);
+
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    transition: 0.3s;
+}
+
+li:hover{
+    transform: translateX(5px);
+    background: rgba(255,255,255,0.12);
+}
+
+@media(max-width:768px){
+
+    h1{
+        font-size: 2rem;
+    }
+
+    form{
+        padding: 20px;
+    }
+
+    .list-area{
+        grid-template-columns: 1fr;
+    }
+}
