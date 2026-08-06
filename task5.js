@@ -18,36 +18,93 @@
 
 
 
-var a = 2;
+// var a = 2;
 
-var c = 2;
-
-
-
-
-function b(){
-
-var x = 2;
-
-var c = 4
-
-console.log(c)
-
-}
+// var c = 2;
 
 
 
 
-console.log(a);
+// function b(){
 
-console.log(this.a);
+// var x = 2;
 
-console.log(this.c)
+// var c = 4
 
-console.log(this.x)
+// console.log(c)
 
-console.log(window.a)
+// }
 
-console.log(window.x)
 
-console.log(b());
+
+
+// console.log(a);
+
+// console.log(this.a);
+
+// console.log(this.c)
+
+// console.log(this.x)
+
+// console.log(window.a)
+
+// console.log(window.x)
+
+// console.log(b());
+
+// let a = "hello"/
+
+// function print (){
+//     let a = "bolo"
+//     console.log(this.a)
+// }
+
+// print()
+
+
+// let obj = {
+//     name:"sandy",
+//     work:"softWare",
+//     print: function(){
+//         console.log(this.name)
+//     }
+// }
+
+
+// let copy = structuredClone(obj)
+// console.log(copy)
+// // copy.name = "sandy2"
+// // // copy.print()
+// // console.log(copy.name)
+// // console.log(obj.name)
+
+// function* calc (x) {
+//     yield x 
+//     return x + 10
+// }
+
+// const gen = calc(10)
+
+// console.log(gen.next())
+// console.log(gen.next())
+// console.log(gen.next())
+// console.log(gen.next())
+
+// function* idMaker() {
+//   let index = 0;
+//   while (true) {
+//     yield index++;
+//   }
+// }
+
+// const gen = idMaker();
+
+// console.log(gen.next().value); // 0
+// console.log(gen.next().value);
+
+
+// // VdOZXFzRZhTrQyyT
+
+
+
+

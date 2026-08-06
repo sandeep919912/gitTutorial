@@ -10,7 +10,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-const API_URL = "https://crudcrud.com/api/09b0bfff5f334d1898e0a80a6c993ef9/items";
+const API_URL = "https://crudcrud.com/api/da468be767ce44558a8876025477f3c6/items";
 
 async function handleListItem(event) {
     event.preventDefault();
