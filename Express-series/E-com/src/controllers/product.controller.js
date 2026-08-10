@@ -2,7 +2,7 @@ const { readProductsFromFile, sortByPrice } = require("../services/productServic
 const path = require('path');
 
 const addProduct = (req , res)=>{
-    res.send("Adding a new product");
+    res.json({message : `product added successfully named ${req.body.name}`});
 }
 
 const getAllProducts = (req , res)=>{
@@ -14,6 +14,7 @@ const getAllProducts = (req , res)=>{
 
     res.sendFile(path.join(__dirname , "../view/productsForm.html"))
 }
+
 
 const getProductById = (req , res)=>{
     const productId = req.params.id;
