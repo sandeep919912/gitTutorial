@@ -1,9 +1,15 @@
+const { readProductsFromFile, sortByPrice } = require("../services/productServices");
+
 const addProduct = (req , res)=>{
     res.send("Adding a new product");
 }
 
 const getAllProducts = (req , res)=>{
-    res.send("Fetching all products");
+    let products = readProductsFromFile()
+    
+    products = sortByPrice(req.query , products)
+
+    res.send(products)
 }
 
 const getProductById = (req , res)=>{

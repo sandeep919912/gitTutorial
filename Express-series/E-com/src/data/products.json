@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "productName": "Wireless Headphones",
+    "price": 2499
+  },
+  {
+    "id": 2,
+    "productName": "Smart Watch",
+    "price": 3999
+  },
+  {
+    "id": 3,
+    "productName": "Bluetooth Speaker",
+    "price": 1999
+  },
+  {
+    "id": 4,
+    "productName": "Gaming Mouse",
+    "price": 1499
+  },
+  {
+    "id": 5,
+    "productName": "Mechanical Keyboard",
+    "price": 3499
+  }
+]
