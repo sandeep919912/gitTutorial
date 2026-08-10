@@ -12,7 +12,7 @@ const getAllProducts = (req , res)=>{
 
     // res.send(products)
 
-    res.sendFile(path.join(__dirname , "../view/products.html"))
+    res.sendFile(path.join(__dirname , "../view/productsForm.html"))
 }
 
 const getProductById = (req , res)=>{
