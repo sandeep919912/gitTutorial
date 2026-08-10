@@ -1,15 +1,18 @@
 const { readProductsFromFile, sortByPrice } = require("../services/productServices");
+const path = require('path');
 
 const addProduct = (req , res)=>{
     res.send("Adding a new product");
 }
 
 const getAllProducts = (req , res)=>{
-    let products = readProductsFromFile()
+    // let products = readProductsFromFile()
     
-    products = sortByPrice(req.query , products)
+    // products = sortByPrice(req.query , products)
 
-    res.send(products)
+    // res.send(products)
+
+    res.sendFile(path.join(__dirname , "../view/products.html"))
 }
 
 const getProductById = (req , res)=>{
