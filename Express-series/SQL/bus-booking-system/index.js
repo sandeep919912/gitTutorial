@@ -6,7 +6,7 @@ const connection = mysql.createConnection({
     host:"localhost",
     user:"root",
     password:"Rootpass@123",
-    database:"testdb"
+    database:"bus-booking-schema"
 })
 
 connection.connect((err)=>{
@@ -16,15 +16,11 @@ connection.connect((err)=>{
     }
     console.log("connection is successful")
 
-    const createTable = `create table students (
+    const createTable = `create table payment (
         id INT PRIMARY KEY,
-        name VARCHAR(29),
-        email VARCHAR(50),
+        amountPaid INT,
+        paymentMethod VARCHAR(100)
     )`
-
-    // const editTable = `update table(
-
-    // )`
 
     connection.execute(createTable , (err)=>{
         if(err){
@@ -34,7 +30,6 @@ connection.connect((err)=>{
         }
         console.log("table created")
     })
-
 
 })
 
