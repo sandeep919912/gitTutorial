@@ -3,8 +3,16 @@ const path = require('path');
 const { sendErrorResponse } = require("../utils/response");
 
 const addProduct = (req , res)=>{
+    const { name } = req.body;
 
-    res.json({message : `product added successfully named ${req.body.name}`});
+    console.log(name);
+
+    res.status(201).json({
+        message: "Product added successfully",
+        product: {
+            name: name
+        }
+    });
 }
 
 const getAllProducts = (req , res)=>{
