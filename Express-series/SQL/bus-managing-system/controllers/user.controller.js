@@ -1,37 +1,45 @@
 const connection = require("../utils/db.connection");
+const User = require("../models/user.model")
 
-const registerUser = (req , res)=>{
-     const {id , name , email} = req.body;
+const registerUser = async (req , res)=>{
+     const { id, name, email } = req.body;
 
-    const registerQuery = `
-        INSERT INTO user (id,name , email) VALUES (?,?,?)
-    `
+    try {
+        const user = await User.create({
+            id,
+            name,
+            email
+        });
 
-    connection.execute(registerQuery , [id , name, email], (err , result)=>{
-        if(err){
-            console.log(err)
-            connection.end()
-            return
-        }
+        console.log("User created:", user.id);
 
-        res.status(201).send(`user with name ${name} has been registered`)
-    })
-}
+        res.status(201).json({
+            message: `User with name ${name} has been registered`,
+            user
+        });
 
-const getUsers = (req , res) => {
-    const getQuery = `
-        SELECT * FROM user
-    `
+    } catch (error) {
+        console.log("CREATE USER ERROR:", error.message);
 
-    connection.execute(getQuery , (err , result)=>{
-        if(err){
-            console.log(err)
-            connection.end()
-            return;
-        }
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
 
-        res.status(200).json(result)
-    })
+const getUsers = async(req , res) => {
+  try {
+        const users = await User.findAll();
+
+        res.status(200).json(users);
+
+    } catch (error) {
+        console.log("GET USERS ERROR:", error.message);
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
 }
 
 module.exports={registerUser , getUsers}
