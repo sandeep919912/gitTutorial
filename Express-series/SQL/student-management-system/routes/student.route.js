@@ -9,4 +9,5 @@ studentRouter.get("/getbyid/:id" , getStudentById)
 studentRouter.put("/update/:id" , updateStudent)
 studentRouter.delete("/delete/:id" , deleteStudent)
 
+
 module.exports=studentRouter;

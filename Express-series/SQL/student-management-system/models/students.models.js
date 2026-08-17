@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../utils/db.connection");
 
 const Student = sequelize.define(
-    "teachers",
+    "students",
     {
         id: {
             type: DataTypes.INTEGER,
@@ -24,8 +24,8 @@ const Student = sequelize.define(
         }
     },
     {
-        tableName: "teachers",
-        timestamps: true
+        tableName: "students",
+        timestamps: false
     }
 );
 

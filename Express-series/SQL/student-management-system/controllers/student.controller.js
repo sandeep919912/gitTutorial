@@ -1,20 +1,37 @@
+const Student = require("../models/students.models");
 const connection = require("../utils/db.connection");
 
-const addStudents = (req , res)=>{
-    const {name , email , age} = req.body;
+const addStudents = async (req , res)=>{
 
-    const insertQuery = `
-        INSERT INTO students (name , email , age) VALUES (?,?,?)
-    `
+    try {
+        const {name , email ,age } = req.body
 
-    connection.execute(insertQuery , [name , email , age] , (err)=>{
-        if(err){
-            console.log(err.message)
-            return
-        }
+        await Student.create(
+            {
+                name:name,
+                email:email,
+                age:age
+            }
+        )
 
-        res.status(201).send(`student registered with name ${name}`)
-    })
+        res.status(201).send(`student with ${name} has been created successfully`)
+    } catch (error) {
+        console.log(error)
+    }
+    // const {name , email , age} = req.body;
+
+    // const insertQuery = `
+    //     INSERT INTO students (name , email , age) VALUES (?,?,?)
+    // `
+
+    // connection.execute(insertQuery , [name , email , age] , (err)=>{
+    //     if(err){
+    //         console.log(err.message)
+    //         return
+    //     }
+
+    //     res.status(201).send(`student registered with name ${name}`)
+    // })
 }
 
 
@@ -62,30 +79,25 @@ const getStudentById = (req, res) => {
 };
 
 
-const updateStudent = (req, res) => {
+const updateStudent = async (req, res) => {
     const { id } = req.params;
+    const { name, email, age } = req.body;
 
-    const updateQuery = `
-        UPDATE students
-        SET name = ?, email = ?
-        WHERE id = ?
-    `;
+    try {
+        const [updatedRows] = await Student.update(
+            {
+                name,
+                email,
+                age
+            },
+            {
+                where: {
+                    id
+                }
+            }
+        );
 
-    const values = [
-        "Captain Cool",
-        "captaincool@example.com",
-        id
-    ];
-
-    connection.execute(updateQuery, values, (err, result) => {
-        if (err) {
-            console.log("UPDATE ERROR:", err.message);
-            return res.status(500).json({
-                message: err.message
-            });
-        }
-
-        if (result.affectedRows === 0) {
+        if (updatedRows === 0) {
             console.log(`UPDATE FAILED: Student with id ${id} not found`);
 
             return res.status(404).json({
@@ -98,27 +110,27 @@ const updateStudent = (req, res) => {
         res.status(200).json({
             message: "Student updated successfully"
         });
-    });
+
+    } catch (error) {
+        console.log("UPDATE ERROR:", error.message);
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
 };
 
-const deleteStudent = (req, res) => {
+const deleteStudent = async (req, res) => {
     const { id } = req.params;
 
-    const deleteQuery = `
-        DELETE FROM students
-        WHERE id = ?
-    `;
+    try {
+        const deletedRows = await Student.destroy({
+            where: {
+                id: id
+            }
+        });
 
-    connection.execute(deleteQuery, [id], (err, result) => {
-        if (err) {
-            console.log("DELETE ERROR:", err.message);
-
-            return res.status(500).json({
-                message: err.message
-            });
-        }
-
-        if (result.affectedRows === 0) {
+        if (deletedRows === 0) {
             console.log(`DELETE FAILED: Student with id ${id} not found`);
 
             return res.status(404).json({
@@ -131,7 +143,15 @@ const deleteStudent = (req, res) => {
         res.status(200).json({
             message: "Student deleted successfully"
         });
-    });
+
+    } catch (error) {
+        console.log("DELETE ERROR:", error.message);
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
+
 };
 
 module.exports={addStudents , getAllStudents,getStudentById , updateStudent , deleteStudent}
