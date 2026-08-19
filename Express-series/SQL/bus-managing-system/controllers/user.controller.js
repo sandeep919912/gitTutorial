@@ -1,5 +1,7 @@
 const connection = require("../utils/db.connection");
-const User = require("../models/user.model")
+const User = require("../models/user.model");
+const Bus = require("../models/bus.model");
+const { Bookings } = require("../models");
 
 const registerUser = async (req , res)=>{
      const { id, name, email } = req.body;
@@ -42,4 +44,31 @@ const getUsers = async(req , res) => {
     }
 }
 
-module.exports={registerUser , getUsers}
+const getBusBookingsByUserId = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        console.log(userId)
+
+        const bookings = await Bookings.findAll({
+            where: {
+                userId
+            },
+            include: [
+                {
+                    model: Bus
+                }
+            ]
+        });
+
+        res.status(200).json(bookings);
+
+    } catch (error) {
+        console.log(error);
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+module.exports={registerUser , getUsers , getBusBookingsByUserId}

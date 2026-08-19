@@ -2,11 +2,11 @@ const express = require("express")
 const userRouter = require("./routes/user.route")
 const db = require("./utils/db.connection")
 const busRouter = require("./routes/bus.router")
+const bookingRouter = require("./routes/booking.route")
 const app = express()
 
 //model
-const userModel = require("./models/user.model")
-const busModel = require("./models/bus.model")
+require("./models")
 
 app.use(express.json())
 
@@ -16,8 +16,9 @@ app.get("/" , (req , res)=>{
 
 app.use("/user" , userRouter)
 app.use("/bus" , busRouter)
+app.use("/" , bookingRouter)
 
-db.sync().then(()=>{
+db.sync({alter:true}).then(()=>{
     app.listen(3000 , (err)=>{
         console.log("server is running at port 3000")
     })
