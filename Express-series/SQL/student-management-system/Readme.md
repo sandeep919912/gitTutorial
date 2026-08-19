@@ -1,0 +1,1 @@
+I'm trying to implement one to one association between two tables . (sequelize)
