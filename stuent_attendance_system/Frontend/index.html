@@ -1,441 +1,164 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Attendance Workspace</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+      * {
+        box-sizing: border-box;
+      }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-        }
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+      }
 
-        .container {
-            width: 700px;
-            max-width: 90%;
-            margin: 50px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
+      .container {
+        width: 700px;
+        max-width: 90%;
+        margin: 50px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+      }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+      }
 
-        .date-section {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
+      .date-section {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+      }
 
-        .date-section input {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
+      .date-section input {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
 
-        .search-btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            background: #2563eb;
-            color: white;
-            cursor: pointer;
-        }
+      .search-btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+      }
 
-        .student {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 10px;
-            border-bottom: 1px solid #ddd;
-        }
+      .search-btn:hover {
+        background: #1d4ed8;
+      }
 
-        .student-name {
-            font-size: 17px;
-            font-weight: bold;
-        }
+      .student {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 10px;
+        border-bottom: 1px solid #ddd;
+      }
 
-        .options {
-            display: flex;
-            gap: 20px;
-        }
+      .student-name {
+        font-size: 17px;
+        font-weight: bold;
+      }
 
-        .options label {
-            cursor: pointer;
-        }
+      .options {
+        display: flex;
+        gap: 20px;
+      }
 
-        .submit-btn {
-            width: 100%;
-            margin-top: 30px;
-            padding: 14px;
-            border: none;
-            border-radius: 6px;
-            background: #16a34a;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
+      .options label {
+        cursor: pointer;
+      }
 
-        #message {
-            text-align: center;
-            margin-top: 20px;
-            font-weight: bold;
-        }
+      .options input {
+        cursor: pointer;
+      }
+
+      .status-present {
+        color: #16a34a;
+        font-weight: bold;
+      }
+
+      .status-absent {
+        color: #dc2626;
+        font-weight: bold;
+      }
+
+      .submit-btn {
+        width: 100%;
+        margin-top: 30px;
+        padding: 14px;
+        border: none;
+        border-radius: 6px;
+        background: #16a34a;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .submit-btn:hover {
+        background: #15803d;
+      }
+
+      #message {
+        text-align: center;
+        margin-top: 20px;
+        font-weight: bold;
+      }
     </style>
-</head>
+  </head>
 
-
-<body>
-
+  <body>
     <div class="container">
+      <h1>📋 Attendance Workspace</h1>
 
-        <h1>📋 Attendance Workspace</h1>
+      <!-- DATE -->
+      <div class="date-section">
+        <input type="date" id="attendanceDate" />
 
-
-        <!-- DATE -->
-        <div class="date-section">
-
-            <input
-                type="date"
-                id="attendanceDate"
-            >
-
-            <button
-                class="search-btn"
-                onclick="loadAttendance()"
-            >
-                Search
-            </button>
-
-        </div>
-
-
-        <!-- STUDENTS -->
-        <div id="studentList">
-            Select a date to load attendance.
-        </div>
-
-
-        <!-- SUBMIT -->
         <button
-            class="submit-btn"
-            onclick="submitAttendance()"
+          class="search-btn"
+          onclick="displayAttendanceWithCondition()"
         >
-            Submit Attendance
+          Search
         </button>
+      </div>
 
+      <!-- STUDENTS -->
+      <div id="studentList">
+        Select a date to load attendance.
+      </div>
 
-        <div id="message"></div>
+      <!-- SUBMIT -->
+      <!-- Hidden initially. It will appear only when attendance doesn't exist -->
+      <button
+        id="submitAttendanceBtn"
+        class="submit-btn"
+        onclick="submitAttendance()"
+        style="display: none"
+      >
+        Submit Attendance
+      </button>
 
+      <button onclick="findAverage()">Average of Students</button>
+
+      <div id="message"></div>
     </div>
 
-
-<script>
-
-const API_URL = "http://localhost:3000/students";
-
-
-// Store selected attendance
-let attendance = {};
-
-
-// ========================================
-// LOAD STUDENTS + ATTENDANCE
-// ========================================
-
-async function loadAttendance() {
-
-    const date =
-        document.getElementById("attendanceDate").value;
-
-
-    if (!date) {
-
-        alert("Please select a date");
-
-        return;
-    }
-
-
-    try {
-
-        const response = await fetch(
-            `${API_URL}/attendance?date=${date}`
-        );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Failed to fetch attendance"
-            );
-
-        }
-
-
-        const students = await response.json();
-
-
-        displayStudents(students);
-
-
-    } catch (error) {
-
-        console.log(error);
-
-        document.getElementById(
-            "studentList"
-        ).innerHTML =
-            "Failed to load attendance.";
-
-    }
-}
-
-
-
-// ========================================
-// DISPLAY STUDENTS
-// ========================================
-
-function displayStudents(students) {
-
-    const studentList =
-        document.getElementById("studentList");
-
-
-    studentList.innerHTML = "";
-
-
-    // Reset attendance object
-    attendance = {};
-
-
-    students.forEach(student => {
-
-
-        let currentStatus = "";
-
-
-        // Check if attendance already exists
-        if (
-            student.Attendances &&
-            student.Attendances.length > 0
-        ) {
-
-            currentStatus =
-                student.Attendances[0].status;
-
-            attendance[student.id] =
-                currentStatus;
-        }
-
-
-        const div =
-            document.createElement("div");
-
-
-        div.className = "student";
-
-
-        div.innerHTML = `
-
-            <div class="student-name">
-                ${student.name}
-            </div>
-
-
-            <div class="options">
-
-                <label>
-
-                    <input
-                        type="radio"
-
-                        name="student-${student.id}"
-
-                        value="Present"
-
-                        ${currentStatus === "Present"
-                            ? "checked"
-                            : ""}
-
-                        onchange="
-                            markAttendance(
-                                ${student.id},
-                                'Present'
-                            )
-                        "
-                    >
-
-                    Present
-
-                </label>
-
-
-                <label>
-
-                    <input
-                        type="radio"
-
-                        name="student-${student.id}"
-
-                        value="Absent"
-
-                        ${currentStatus === "Absent"
-                            ? "checked"
-                            : ""}
-
-                        onchange="
-                            markAttendance(
-                                ${student.id},
-                                'Absent'
-                            )
-                        "
-                    >
-
-                    Absent
-
-                </label>
-
-            </div>
-
-        `;
-
-
-        studentList.appendChild(div);
-
-    });
-}
-
-
-
-// ========================================
-// MARK ATTENDANCE
-// ========================================
-
-function markAttendance(studentId, status) {
-
-    attendance[studentId] = status;
-
-    console.log(attendance);
-}
-
-
-
-// ========================================
-// SUBMIT ATTENDANCE
-// ========================================
-
-async function submitAttendance() {
-
-    const date =
-        document.getElementById(
-            "attendanceDate"
-        ).value;
-
-
-    if (!date) {
-
-        alert("Please select a date");
-
-        return;
-    }
-
-
-    if (Object.keys(attendance).length === 0) {
-
-        alert(
-            "Please mark attendance for at least one student"
-        );
-
-        return;
-    }
-
-
-    try {
-
-
-        for (const studentId in attendance) {
-
-
-            const response = await fetch(
-                `${API_URL}/attendance`,
-                {
-
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-
-                    body: JSON.stringify({
-
-                        studentId:
-                            Number(studentId),
-
-                        date: date,
-
-                        status:
-                            attendance[studentId]
-
-                    })
-
-                }
-            );
-
-
-            if (!response.ok) {
-
-                const data =
-                    await response.json();
-
-                throw new Error(
-                    data.message ||
-                    "Failed to submit attendance"
-                );
-
-            }
-
-        }
-
-
-        document.getElementById(
-            "message"
-        ).textContent =
-            "✅ Attendance submitted successfully";
-
-
-    } catch (error) {
-
-        console.log(error);
-
-
-        document.getElementById(
-            "message"
-        ).textContent =
-            "❌ " + error.message;
-
-    }
-
-}
-
-</script>
-
-</body>
-
+    <!-- Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- JavaScript -->
+    <script src="index.js"></script>
+  </body>
 </html>

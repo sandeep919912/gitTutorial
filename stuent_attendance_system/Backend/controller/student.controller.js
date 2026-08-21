@@ -48,6 +48,7 @@ const addAttendance = async (req , res) => {
 const getAllStudentWithAttendanceFilterByDate = async (req, res) => {
     try {
         const { date } = req.query;
+        console.log(date)
 
         const students = await Student.findAll({
             include: [
@@ -89,4 +90,25 @@ const getAllStudents = async (req, res) => {
     }
 };
 
-export {addStudents , addAttendance , getAllStudentWithAttendanceFilterByDate, getAllStudents};
+const getAllAttendance = async (req, res) => {
+    try {
+        const students = await Student.findAll({
+            include: [
+                {
+                    model: Attendance
+                }
+            ]
+        });
+
+        res.status(200).json(students);
+
+    } catch (error) {
+        console.log(error.message);
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+export {addStudents , addAttendance , getAllStudentWithAttendanceFilterByDate, getAllStudents , getAllAttendance};

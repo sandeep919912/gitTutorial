@@ -1,5 +1,5 @@
 import express from "express"
-import {addStudents , addAttendance, getAllStudentWithAttendanceFilterByDate , getAllStudents} from "../controller/student.controller.js"
+import {addStudents , addAttendance, getAllStudentWithAttendanceFilterByDate , getAllStudents, getAllAttendance} from "../controller/student.controller.js"
 
 const studentRouter = express.Router()
 
@@ -7,6 +7,7 @@ studentRouter.post("/addStudents" , addStudents)
 studentRouter.post("/attendance" ,addAttendance )
 studentRouter.get("/attendance", getAllStudentWithAttendanceFilterByDate);
 studentRouter.get("/students", getAllStudents);
+studentRouter.get("/allAttendance", getAllAttendance);
 
 // studentRouter.post("/addStudent" , addStudentsWithAttendance)
 
