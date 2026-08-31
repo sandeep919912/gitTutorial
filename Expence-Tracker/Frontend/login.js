@@ -15,13 +15,14 @@ form.addEventListener("submit" , async (e)=>{
 
     console.log(formData)
 
-    // try {
-    //     const res = await axios.post(API , formData)
-    //     alert(res.data)
-    // } catch (error) {
-    //     alert(error.response.data.message)
-    // }
+    try {
+        const res = await axios.post(API , formData)
+        alert(res.data.message)
+        window.location.href="index.html"
+    } catch (error) {
+        alert(error.response.data.message)
+    }
 
-    // email.value = ""
-    // password.value = ""
+    email.value = ""
+    password.value = ""
 })

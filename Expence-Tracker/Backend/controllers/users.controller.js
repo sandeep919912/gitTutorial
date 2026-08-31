@@ -29,4 +29,31 @@ const signup = async (req , res) => {
     }
 }
 
-module.exports = {signup}
+
+const login = async (req , res) => {
+    try {
+        const {email , password} = req.body;
+
+        const user = await Users.findOne({where:{
+            email
+        }})
+
+        // console.log(user)
+
+        if(!user){
+            return res.status(404).json({message:"user not exists"})
+        }
+
+        if(user.password !== password){
+            return res.status(401).json({message:"user unauthorized"})
+        }
+        
+        res.status(200).json({message:"user login successfully"})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error.message)
+    }
+}
+
+
+module.exports = {signup , login}
