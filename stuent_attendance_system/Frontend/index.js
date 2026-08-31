@@ -8,6 +8,7 @@ const getAllStudents = async ()=>{
     const res = await axios.get(`${API}/students`)
     displayAttendanceWithCondition(res.data)
 }
+
 const displayAttendanceWithCondition = async () => {
     try {
         const attendanceDate = document.getElementById("attendanceDate");
