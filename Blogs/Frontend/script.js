@@ -1,3 +1,6 @@
+const API1 = "http://localhost:3000/blogs";
+const API2 = "http://localhost:3000/comments";
+
 const form = document.querySelector(".form");
 
 const title = document.getElementById("title");
@@ -14,10 +17,8 @@ const handleSubmit = async (event) => {
       content: content.value,
     });
 
-    await getAllBlogs();
-    title.value="",
-    author.value="",
-    content.value=""
+    await getAllBlogsWithComments();
+    ((title.value = ""), (author.value = ""), (content.value = ""));
 
     console.log(res.data);
   } catch (error) {
@@ -27,168 +28,341 @@ const handleSubmit = async (event) => {
 
 form.addEventListener("submit", handleSubmit);
 
-const API1 = "http://localhost:3000/blogs";
-const API2 = "http://localhost:3000/comments";
-
-const getAllBlogs = async () => {
+const getAllBlogsWithComments = async () => {
   try {
-    const res = await axios.get(`${API1}/get`);
-    DisplayBlogs(res.data);
+    const res = await axios.get(`${API1}/getall`);
+
+    const blogs = res.data;
+    displayBlogs(blogs);
+    console.log(blogs);
   } catch (error) {
     console.log(error.message);
   }
 };
 
-const getAllComments = async (blogId) => {
-  try {
-    const result = await axios.get(`${API2}/comments?blogId=${blogId}`);
-
-    return result.data;
-  } catch (error) {
-    console.log(error.message);
-    return [];
-  }
-};
-
-const DisplayBlogs = (blog) => {
+const displayBlogs = (blogs) => {
   try {
     const blogArea = document.querySelector(".blogs");
 
     blogArea.innerHTML = "";
 
-    blog.forEach(async (element) => {
+    blogs.forEach((element) => {
       const newDiv = document.createElement("div");
+
       newDiv.classList.add("blog-card");
 
       newDiv.innerHTML = `
-                <h1>${element.title}</h1>
+        <h1>${element.title}</h1>
 
-                <h2>By ${element.author}</h2>
+        <h2>By ${element.author}</h2>
 
-                <button class="remove-blog">Remove Blog</button> 
+        <button class="remove-blog">
+          Remove Blog
+        </button>
 
-                <button class="read-more-btn">
-                    Read More >
-                </button>
+        <button class="read-more-btn">
+          Read More >
+        </button>
 
-                <div class="blog-details">
+        <div class="blog-details">
 
-                    <p class="blog-content">
-                        ${element.content}
-                    </p>
+          <p class="blog-content">
+            ${element.content}
+          </p>
 
-                    <div class="comment-section">
+          <div class="comment-section">
 
-                        <h3>Comments</h3>
+            <h3>Comments</h3>
 
-                        <div class="comments">
-                        Loading comments...
-                        </div>
+            <div class="comments">
+              ${displayComments(element.comments || [])}
+            </div>
 
+            <textarea
+              class="comment-input"
+              placeholder="Write a comment..."
+            ></textarea>
 
-                        <textarea 
-                            class="comment-input"
-                            placeholder="Write a comment..."
-                        ></textarea>
+            <button class="comment-btn">
+              Add Comment
+            </button>
 
-                        <button class="comment-btn">
-                            Add Comment
-                        </button>
+          </div>
 
-                    </div>
-
-                </div>
-            `;
+        </div>
+      `;
 
       blogArea.appendChild(newDiv);
 
-      // Dropdown / Read More
+      //read more section
+
       const readMoreBtn = newDiv.querySelector(".read-more-btn");
 
       const blogDetails = newDiv.querySelector(".blog-details");
 
-      readMoreBtn.addEventListener("click", async () => {
+      readMoreBtn.addEventListener("click", () => {
         blogDetails.classList.toggle("show");
 
-        const commentsArea = newDiv.querySelector(".comments");
         if (blogDetails.classList.contains("show")) {
           readMoreBtn.innerHTML = "Hide Content <";
-
-          const comments = await getAllComments(element.id);
-
-          commentsArea.innerHTML = "";
-
-          if (comments.length === 0) {
-            commentsArea.innerHTML = `
-          <p>No comments yet.</p>
-        `;
-          } else {
-            comments.forEach((comment) => {
-              const commentDiv = document.createElement("div");
-
-              commentDiv.classList.add("comment");
-
-              commentDiv.innerHTML = `
-            <p>${comment.comment}</p>
-            <button class="remove-comment">undo</button>
-          `;
-
-              commentsArea.appendChild(commentDiv);
-              const deleteCommentBtn =
-                commentDiv.querySelector(".remove-comment");
-
-              deleteCommentBtn.addEventListener("click", async () => {
-                try {
-                  // console.log("Comment ID:", comment.id);
-
-                  await axios.delete(`${API2}/delete/${comment.id}`);
-
-                  commentDiv.remove();
-                } catch (error) {
-                  console.log(error.message);
-                }
-              });
-            });
-          }
         } else {
           readMoreBtn.innerHTML = "Read More >";
         }
       });
 
-      //post comment area
+      //comments section
+
       const commentBtn = newDiv.querySelector(".comment-btn");
 
       const commentInput = newDiv.querySelector(".comment-input");
 
       commentBtn.addEventListener("click", async () => {
         try {
-          const comment = commentInput.value;
+          const comment = commentInput.value.trim();
 
-          const result = await axios.post(`${API2}/post/${element.id}`, {
+          if (!comment) {
+            alert("Please write a comment");
+            return;
+          }
+
+          await axios.post(`${API2}/post/${element.id}`, {
             comment,
           });
 
-          commentInput.value = ""
+          commentInput.value = "";
+
+          await getAllBlogsWithComments();
         } catch (error) {
           console.log(error.message);
         }
       });
 
+      //delete comments
 
-      const removeBlogBtn = newDiv.querySelector(".remove-blog")
+      const deleteCommentButtons = newDiv.querySelectorAll(".remove-comment");
 
-      removeBlogBtn.addEventListener("click" , async ()=>{
+      deleteCommentButtons.forEach((deleteCommentBtn) => {
+        deleteCommentBtn.addEventListener("click", async () => {
+          try {
+            const commentId = deleteCommentBtn.dataset.id;
+
+            await axios.delete(`${API2}/delete/${commentId}`);
+
+            getAllBlogsWithComments();
+          } catch (error) {
+            console.log(error.message);
+          }
+        });
+      });
+
+      //remove blpogs
+
+      const removeBlogBtn = newDiv.querySelector(".remove-blog");
+
+      removeBlogBtn.addEventListener("click", async () => {
         try {
-            await axios.delete(`${API1}/delete/${element.id}`)
-            newDiv.remove()
+          await axios.delete(`${API1}/delete/${element.id}`);
+
+          newDiv.remove();
         } catch (error) {
-            console.log(error.message)
+          console.log(error.message);
         }
-      })
+      });
     });
   } catch (error) {
     console.log(error);
   }
 };
 
-getAllBlogs();
+//cments display section
+
+const displayComments = (comments) => {
+  console.log(comments);
+
+  if (comments.length === 0) {
+    return `<p>No comments yet.</p>`;
+  }
+
+  return comments
+    .map((comment) => {
+      return `
+      <div class="comment">
+
+        <p>${comment.comment}</p>
+
+        <button
+          class="remove-comment"
+          data-id="${comment.id}"
+        >
+          undo
+        </button>
+
+      </div>
+    `;
+    })
+    .join("");
+};
+
+getAllBlogsWithComments();
+
+
+// const getAllBlogs = async () => {
+//   try {
+//     const res = await axios.get(`${API1}/get`);
+//     DisplayBlogs(res.data);
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
+
+// const getAllComments = async (blogId) => {
+//   try {
+//     const result = await axios.get(`${API2}/comments?blogId=${blogId}`);
+
+//     return result.data;
+//   } catch (error) {
+//     console.log(error.message);
+//     return [];
+//   }
+// };
+
+// const DisplayBlogs = (blog) => {
+//   try {
+//     const blogArea = document.querySelector(".blogs");
+
+//     blogArea.innerHTML = "";
+
+//     blog.forEach(async (element) => {
+//       const newDiv = document.createElement("div");
+//       newDiv.classList.add("blog-card");
+
+//       newDiv.innerHTML = `
+//                 <h1>${element.title}</h1>
+
+//                 <h2>By ${element.author}</h2>
+
+//                 <button class="remove-blog">Remove Blog</button>
+
+//                 <button class="read-more-btn">
+//                     Read More >
+//                 </button>
+
+//                 <div class="blog-details">
+
+//                     <p class="blog-content">
+//                         ${element.content}
+//                     </p>
+
+//                     <div class="comment-section">
+
+//                         <h3>Comments</h3>
+
+//                         <div class="comments">
+//                         Loading comments...
+//                         </div>
+
+//                         <textarea
+//                             class="comment-input"
+//                             placeholder="Write a comment..."
+//                         ></textarea>
+
+//                         <button class="comment-btn">
+//                             Add Comment
+//                         </button>
+
+//                     </div>
+
+//                 </div>
+//             `;
+
+//       blogArea.appendChild(newDiv);
+
+//       // Dropdown / Read More
+//       const readMoreBtn = newDiv.querySelector(".read-more-btn");
+
+//       const blogDetails = newDiv.querySelector(".blog-details");
+
+//       readMoreBtn.addEventListener("click", async () => {
+//         blogDetails.classList.toggle("show");
+
+//         const commentsArea = newDiv.querySelector(".comments");
+//         if (blogDetails.classList.contains("show")) {
+//           readMoreBtn.innerHTML = "Hide Content <";
+
+//           const comments = await getAllComments(element.id);
+
+//           commentsArea.innerHTML = "";
+
+//           if (comments.length === 0) {
+//             commentsArea.innerHTML = `
+//           <p>No comments yet.</p>
+//         `;
+//           } else {
+//             comments.forEach((comment) => {
+//               const commentDiv = document.createElement("div");
+
+//               commentDiv.classList.add("comment");
+
+//               commentDiv.innerHTML = `
+//             <p>${comment.comment}</p>
+//             <button class="remove-comment">undo</button>
+//           `;
+
+//               commentsArea.appendChild(commentDiv);
+//               const deleteCommentBtn =
+//                 commentDiv.querySelector(".remove-comment");
+
+//               deleteCommentBtn.addEventListener("click", async () => {
+//                 try {
+//                   // console.log("Comment ID:", comment.id);
+
+//                   await axios.delete(`${API2}/delete/${comment.id}`);
+
+//                   commentDiv.remove();
+//                 } catch (error) {
+//                   console.log(error.message);
+//                 }
+//               });
+//             });
+//           }
+//         } else {
+//           readMoreBtn.innerHTML = "Read More >";
+//         }
+//       });
+
+//       //post comment area
+//       const commentBtn = newDiv.querySelector(".comment-btn");
+
+//       const commentInput = newDiv.querySelector(".comment-input");
+
+//       commentBtn.addEventListener("click", async () => {
+//         try {
+//           const comment = commentInput.value;
+
+//           const result = await axios.post(`${API2}/post/${element.id}`, {
+//             comment,
+//           });
+
+//           commentInput.value = ""
+//         } catch (error) {
+//           console.log(error.message);
+//         }
+//       });
+
+//       const removeBlogBtn = newDiv.querySelector(".remove-blog")
+
+//       removeBlogBtn.addEventListener("click" , async ()=>{
+//         try {
+//             await axios.delete(`${API1}/delete/${element.id}`)
+//             newDiv.remove()
+//         } catch (error) {
+//             console.log(error.message)
+//         }
+//       })
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+// getAllBlogs();

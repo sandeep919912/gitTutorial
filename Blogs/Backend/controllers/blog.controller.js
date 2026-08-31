@@ -1,4 +1,4 @@
-import { Blog } from "../models/index.js";
+import { Blog, Comments } from "../models/index.js";
 
 const postBlogs = async (req , res)=>{
     try {
@@ -47,6 +47,20 @@ const getAllBlogs = async (req , res) => {
     }
 }
 
+const getAllBlogsWithComment = async (req , res)=>{
+    try {
+        const blogs = await Blog.findAll({
+            include:{
+                model:Comments
+            }
+        })
+
+        res.status(200).json(blogs)
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 
-export {postBlogs , getAllBlogs,deleteBlogs}
+
+export {postBlogs , getAllBlogs,deleteBlogs , getAllBlogsWithComment}
