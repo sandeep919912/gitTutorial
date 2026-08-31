@@ -1,16 +1,19 @@
 const express = require("express")
 const sequelize = require("./config/db.connection")
 const expenceRouter = require("./routes/expence.route")
+const userRouter = require("./routes/users.route")
 const cors = require("cors")
 
 //models
 const expenceModel = require("./models/expences.model")
+const userModel = require("./models/user.model")
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 
 app.use("/expences" , expenceRouter)
+app.use("/users" , userRouter)
 
 sequelize.sync().then(()=>{
     app.listen(3000 , (err)=>{
