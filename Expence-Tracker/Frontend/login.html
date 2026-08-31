@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="container">
+      <h2>Welcome Back to Your Expence.</h2>
+      <h5>please login before proceeding..</h5>
+
+      <div id="form-container">
+        <form>
+          <div class="inputbox">
+            <label for="email">Email:</label>
+            <input
+              type="text"
+              placeholder="Enter your email"
+              id="emailbox"
+            />
+          </div>
+          <div class="inputbox">
+            <label for="password">Password:</label>
+            <input
+              type="text"
+              placeholder="Enter your password"
+              id="passwordbox"
+            />
+          </div>
+
+          <button type="submit" class="submit-btn">submit</button>
+          <a href="signup.html">new user ? <span class="span">signup</span></a>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="login.js"></script>
+  </body>
+</html>

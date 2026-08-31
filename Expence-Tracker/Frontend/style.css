@@ -18,7 +18,7 @@ body{
     display: flex;
     flex-direction: column;
     padding: 10px;
-    width: 400px;
+    width: 480px;
     height: auto;
     background-color: aliceblue;
     border-radius: 10px;
@@ -83,4 +83,13 @@ form{
 .submit-btn:hover{
     background-color: rgb(25, 88, 136);
     cursor: pointer;
+}
+
+a{ 
+    text-decoration: none;
+    align-self: center;
+    margin-top: 10px;
+}
+.span{
+    color: brown;
 }
