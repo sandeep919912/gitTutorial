@@ -1,4 +1,5 @@
 const Users = require("../models/user.model");
+const bcrypt = require("bcrypt");
 
 const signup = async (req , res) => {
     try {
@@ -16,13 +17,21 @@ const signup = async (req , res) => {
             return res.status(403).json({message:"user already exist"})
         }
 
-        const result = await Users.create({
-            name,
-            email,
-            password
+        bcrypt.hash(password , 10 , async (err , hash) => {
+            if(err){
+                return res.status(500).json({message:"something went wrong"})
+            }
+            
+            const result = await Users.create({
+                name,
+                email,
+                password: hash
+            })
+    
         })
 
         res.status(200).json("user registered successfully")
+
     } catch (error) {
         console.log(error)
         res.status(500).json(error.message)
@@ -44,9 +53,16 @@ const login = async (req , res) => {
             return res.status(404).json({message:"user not exists"})
         }
 
-        if(user.password !== password){
-            return res.status(401).json({message:"user unauthorized"})
-        }
+        bcrypt.compare(password , user.password , (err , result) => {
+            if(err){
+                return res.status(500).json({message:"something went wrong"})
+            }
+        
+            if(!result){
+                return res.status(403).json({message:"invalid password"})
+            }
+            
+        })
         
         res.status(200).json({message:"user login successfully"})
     } catch (error) {
