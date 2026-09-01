@@ -18,6 +18,7 @@ form.addEventListener("submit" , async (e)=>{
     try {
         const res = await axios.post(API , formData)
         alert(res.data.message)
+        localStorage.setItem("token", res.data.token)
         window.location.href="index.html"
     } catch (error) {
         alert(error.response.data.message)

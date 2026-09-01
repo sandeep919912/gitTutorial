@@ -1,95 +1,88 @@
 const API_URL = "http://localhost:3000/expences";
 
-
 // ===============================
 // GET ALL EXPENSES
 // ===============================
 async function getExpenses() {
-    try {
-        const response = await fetch(`${API_URL}/get`);
+  try {
+    const response = await axios.get(`${API_URL}/get` , {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+    });
 
-        if (!response.ok) {
-            throw new Error("Failed to fetch expenses");
-        }
+    console.log(response);
 
-        const expenses = await response.json();
-
-        displayExpenses(expenses);
-
-    } catch (error) {
-        console.log(error.message);
-    }
+    displayExpenses(response.data);
+  } catch (error) {
+    console.log(error.message);
+  }
 }
-
 
 // ===============================
 // ADD EXPENSE
 // ===============================
 async function handleAddExpense(event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    const productPrice = document.getElementById("expenseInput").value;
-    const description = document.getElementById("descriptionInput").value;
-    const category = document.getElementById("categorySelect").value;
+  const productPrice = document.getElementById("expenseInput").value;
+  const description = document.getElementById("descriptionInput").value;
+  const category = document.getElementById("categorySelect").value;
+  const token = localStorage.getItem("token");
 
-    try {
-        const response = await fetch(`${API_URL}/add`, {
-            method: "POST",
+  if (!token) {
+    alert("Please log in to add expenses.");
+    return;
+  }
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/expences/add",
+      {
+        productPrice,
+        description,
+        category,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
-            body: JSON.stringify({
-                productPrice: Number(productPrice),
-                description,
-                category
-            })
-        });
+    const data = response.data;
 
-        const data = await response.json();
+    // Clear form
+    document.getElementById("expenseForm").reset();
 
-        if (!response.ok) {
-            throw new Error(data.message || "Failed to add expense");
-        }
-
-        console.log("Expense added:", data);
-
-        // Clear form
-        document.getElementById("expenseForm").reset();
-
-        // Refresh expense list
-        getExpenses();
-
-    } catch (error) {
-        console.log(error.message);
-        alert(error.message);
-    }
+    // Refresh expense list
+    getExpenses();
+  } catch (error) {
+    console.log(error.message);
+    alert(error.message);
+  }
 }
-
 
 // ===============================
 // DISPLAY EXPENSES
 // ===============================
 function displayExpenses(expenses) {
+  const expenseList = document.getElementById("expenseList");
+  const totalExpense = document.getElementById("totalExpense");
 
-    const expenseList = document.getElementById("expenseList");
-    const totalExpense = document.getElementById("totalExpense");
+  expenseList.innerHTML = "";
 
-    expenseList.innerHTML = "";
+  let total = 0;
 
-    let total = 0;
+  expenses.forEach((expense) => {
+    total += Number(expense.productPrice);
 
-    expenses.forEach((expense) => {
+    const li = document.createElement("li");
 
-        total += Number(expense.productPrice);
+    li.className =
+      "list-group-item d-flex justify-content-between align-items-center";
 
-        const li = document.createElement("li");
-
-        li.className =
-            "list-group-item d-flex justify-content-between align-items-center";
-
-        li.innerHTML = `
+    li.innerHTML = `
             <div>
                 <strong>₹${expense.productPrice}</strong>
                 <br>
@@ -108,41 +101,30 @@ function displayExpenses(expenses) {
             </button>
         `;
 
-        expenseList.appendChild(li);
-    });
+    expenseList.appendChild(li);
+  });
 
-    totalExpense.textContent = total;
+  totalExpense.textContent = total;
 }
-
 
 // ===============================
 // DELETE EXPENSE
 // ===============================
 async function deleteExpense(id) {
+  try {
+    const response = await axios.delete(`${API_URL}/delete/${id}`)
 
-    try {
+    const data =  response.data;
 
-        const response = await fetch(`${API_URL}/delete/${id}`, {
-            method: "DELETE"
-        });
+    console.log(data);
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || "Failed to delete expense");
-        }
-
-        console.log(data);
-
-        // Refresh list
-        getExpenses();
-
-    } catch (error) {
-        console.log(error.message);
-        alert(error.message);
-    }
+    // Refresh list
+    getExpenses();
+  } catch (error) {
+    console.log(error.message);
+    alert(error.message);
+  }
 }
-
 
 // ===============================
 // LOAD EXPENSES WHEN PAGE LOADS

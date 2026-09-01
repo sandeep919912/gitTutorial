@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require("express")
 const sequelize = require("./config/db.connection")
 const expenceRouter = require("./routes/expence.route")
@@ -5,8 +6,9 @@ const userRouter = require("./routes/users.route")
 const cors = require("cors")
 
 //models
-const expenceModel = require("./models/expences.model")
-const userModel = require("./models/user.model")
+require("./models/index")
+
+
 
 const app = express()
 app.use(cors())
@@ -21,4 +23,4 @@ sequelize.sync().then(()=>{
     })
 }).catch((err)=>{
     console.log(err.message)
-})
+}) 

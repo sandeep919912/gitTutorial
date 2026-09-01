@@ -1,27 +1,78 @@
 const { where } = require("sequelize");
 const Expences = require("../models/expences.model");
+const jwt = require("jsonwebtoken");
 
 const addExpences = async (req, res) => {
-  try {
-    const { productPrice, description, category } = req.body;
+    try {
+        const authHeader = req.headers.authorization;
 
-    const registerProduct = await Expences.create({
-      productPrice,
-      description,
-      category,
-    });
+        if (!authHeader) {
+            return res.status(401).json({
+                message: "Token required"
+            });
+        }
 
-    res.status(201).json(registerProduct);
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).send(error.message);
-  }
+        const token = authHeader.split(" ")[1];
+
+        const decoded = jwt.verify(
+            token,
+            process.env.SECRET_KEY
+        );
+
+        const userId = decoded.userId;
+
+        console.log("user id in add expenses:", userId);
+
+        const {
+            productPrice,
+            description,
+            category
+        } = req.body;
+
+        const registerProduct = await Expences.create({
+          productPrice,
+          description,
+          category,
+          userId
+        });
+
+        res.status(201).json(registerProduct);
+
+    } catch (error) {
+        console.log(error.message);
+
+        res.status(500).json({
+            message: error.message
+        });
+    }
 };
 
-const getExpences = async (req, res) => {
+const getExpencesForUser = async (req, res) => {
   try {
-    const totalExpences = await Expences.findAll();
-    res.status(200).json(totalExpences);
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+      return res.status(401).json({
+        message: "Token required"
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    const decoded = jwt.verify(
+      token,
+      process.env.SECRET_KEY
+    );
+
+    const userId = decoded.userId;
+
+    const userExpences = await Expences.findAll({
+      where: { userId }
+    });
+
+    console.log("User Expenses:", userExpences);
+
+    res.status(200).json(userExpences);
   } catch (error) {
     console.log(error.message);
   }
@@ -47,6 +98,6 @@ const deleteExpences = async (req, res) => {
 
 module.exports = {
   addExpences,
-  getExpences,
+  getExpencesForUser,
   deleteExpences,
 };
