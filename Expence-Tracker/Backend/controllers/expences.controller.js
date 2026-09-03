@@ -21,7 +21,7 @@ const addExpences = async (req, res) => {
 
         const userId = decoded.userId;
 
-        console.log("user id in add expenses:", userId);
+        // console.log("user id in add expenses:", userId);
 
         const {
             productPrice,
@@ -70,7 +70,7 @@ const getExpencesForUser = async (req, res) => {
       where: { userId }
     });
 
-    console.log("User Expenses:", userExpences);
+    // console.log("User Expenses:", userExpences);
 
     res.status(200).json(userExpences);
   } catch (error) {

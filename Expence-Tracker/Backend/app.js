@@ -4,6 +4,7 @@ const sequelize = require("./config/db.connection")
 const expenceRouter = require("./routes/expence.route")
 const userRouter = require("./routes/users.route")
 const cors = require("cors")
+const paymentRouter = require("./routes/payment.route")
 
 //models
 require("./models/index")
@@ -16,6 +17,7 @@ app.use(express.json())
 
 app.use("/expences" , expenceRouter)
 app.use("/users" , userRouter)
+app.use("/payments" , paymentRouter)
 
 sequelize.sync().then(()=>{
     app.listen(3000 , (err)=>{
