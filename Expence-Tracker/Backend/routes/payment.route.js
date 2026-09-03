@@ -5,6 +5,8 @@ const router = express.Router()
 
 router.post("/create-order" , createPayment)
 router.post("/verify" , verifyPayment)
+// Cashfree redirects the browser to return_url via GET after payment
+router.get("/verify" , verifyPayment)
 
 
 module.exports = router

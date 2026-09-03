@@ -21,6 +21,16 @@ async function getExpenses() {
 
     console.log(response);
 
+    getUser();
+    const isPremium = localStorage.getItem("isPremium");
+    console.log(isPremium);
+    if(isPremium === "true") {
+
+      document.getElementById("premiumBtn").textContent =
+        "You are a Premium User!";
+
+      document.getElementById("premiumBtn").disabled = true;
+    }
     displayExpenses(response.data);
   } catch (error) {
     console.log(error.message);
@@ -134,13 +144,43 @@ async function deleteExpense(id) {
   }
 }
 
+const getUser = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = "login.html";
+      alert("Please log in to access this page.");
+      return;
+    }
+
+    const response = await axios.get("http://localhost:3000/users/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const user = response.data.user;
+
+    // console.log("User data:", data.user.id);
+
+    console.log(user.isPremium)
+
+    localStorage.setItem("isPremium", user.isPremium);
+
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+};
+
 const API = "http://localhost:3000/payments";
 
-const premiumBtn = document.querySelector(".premium");
+const premiumBtn = document.querySelector("#premiumBtn");
 
 const cashfree = Cashfree({
   mode: "sandbox",
 });
+
 premiumBtn.addEventListener("click", async () => {
 
   const res = await axios.post(
@@ -159,7 +199,7 @@ premiumBtn.addEventListener("click", async () => {
     paymentSessionId: res.data.paymentSessionId,
     redirectTarget: "_modal",
   };
-  cashfree.checkout(checkoutOptions).then((result) => {
+  cashfree.checkout(checkoutOptions).then(async (result) => {
     if (result.error) {
       // This will be true whenever user clicks on close icon inside the modal or any error happens during the payment
       console.log(
@@ -177,9 +217,34 @@ premiumBtn.addEventListener("click", async () => {
       // This will be called whenever the payment is completed irrespective of transaction status
       console.log("Payment has been completed, Check for Payment Status");
       console.log(result.paymentDetails.paymentMessage);
+
+      // Actually verify with our backend so the order status gets updated in the DB
+      try {
+        const verifyRes = await axios.post(
+          `${API}/verify`,
+          {},
+          {
+            params: {
+              order_id: res.data.orderId,
+            },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          },
+        );
+
+        console.log("Payment verification result:", verifyRes.data);
+      } catch (error) {
+        console.log(
+          "Payment verification failed:",
+          error.response?.data || error.message,
+        );
+      }
     }
   });
 });
+
+
 
 // const token = localStorage.getItem("token");
 

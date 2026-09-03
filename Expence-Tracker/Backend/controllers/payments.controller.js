@@ -28,6 +28,7 @@ const createPayment = async (req, res) => {
     }
 
     const orderId = `ORDER_${userId}_${Date.now()}`;
+    console.log("Generated Order ID:", orderId);
 
     const orderAmount = 599;
     const orderCurrency = "INR";
@@ -118,9 +119,16 @@ const verifyPayment = async (req, res) => {
                 status: "SUCCESSFUL"
             });
 
+            // Grant premium to the user
+            await Users.update(
+                { isPremium: true },
+                { where: { id: order.userId } }
+            );
+
             return res.json({
                 status: "SUCCESSFUL",
-                message: "Payment successful"
+                message: "Payment successful",
+                isPremium: true
             });
         }
 

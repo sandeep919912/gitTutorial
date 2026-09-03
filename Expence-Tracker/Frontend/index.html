@@ -28,6 +28,54 @@
             padding: 5px 10px;
             cursor: pointer;
         }
+        .premium-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .premium {
+            background: linear-gradient(135deg, #f9d423 0%, #ff4e50 100%);
+            color: #fff;
+            border: none;
+            padding: 12px 32px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 165, 0, 0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            letter-spacing: 0.5px;
+        }
+        .premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 165, 0, 0.5);
+        }
+        .premium:active {
+            transform: translateY(0);
+        }
+        .premium.active {
+            background: linear-gradient(135deg, #4347b2, #8e9fe8);
+            cursor: default;
+            box-shadow: 0 4px 15px rgba(78, 84, 196, 0.4);
+        }
+        .premium:disabled {
+            opacity: 1;
+        }
+        .premium-banner {
+            margin-bottom:  ​10px;
+            padding: ​10px 14px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .premium-banner.text-success {
+            background-color: rgba(25, 135, 84, 0.12);
+            color: #198754;
+        }
+        .premium-banner.text-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        
      </style>
 </head>
 <body class="bg-light">
@@ -100,7 +148,13 @@
                     </div>
                 </div>
 
-                <button class="premium">premium</button>
+                <!-- Premium Section -->
+                <div class="premium-section">
+                    <div id="premiumStatus" class="premium-banner d-none"></div>
+                    <button id="premiumBtn" class="premium">
+                         Be Premium
+                    </button>
+                </div>
 
                 <!-- Total Expense -->
                 <div class="card shadow mt-4">

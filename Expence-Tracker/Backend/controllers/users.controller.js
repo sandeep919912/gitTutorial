@@ -18,20 +18,15 @@ const signup = async (req , res) => {
             return res.status(403).json({message:"user already exist"})
         }
 
-        bcrypt.hash(password , 10 , async (err , hash) => {
-            if(err){
-                return res.status(500).json({message:"something went wrong"})
-            }
-            
-            const result = await Users.create({
-                name,
-                email,
-                password: hash
-            })
-    
-        })
+        const hash = await bcrypt.hash(password, 10);
 
-        res.status(200).json("user registered successfully")
+        await Users.create({
+            name,
+            email,
+            password: hash
+        });
+
+        res.status(200).json({ message: "user registered successfully" })
 
     } catch (error) {
         console.log(error)
@@ -61,21 +56,18 @@ const login = async (req , res) => {
             return res.status(404).json({message:"user not exists"})
         }
 
-        bcrypt.compare(password , user.password , (err , result) => {
-            if(err){
-                return res.status(500).json({message:"something went wrong"})
-            }
-        
-            if(!result){
-                return res.status(403).json({message:"invalid password"})
-            }
+        const isValidPassword = await bcrypt.compare(password, user.password);
 
+        if (!isValidPassword) {
+            return res.status(403).json({ message: "invalid password" });
+        }
+
+        res.status(200).json({
+            message: "user login successfully",
+            token: generateToken(user.id),
+            userId: user.id,
+            isPremium: user.isPremium
         })
-        
-       res.status(200).json({
-    message: "user login successfully",
-    token: generateToken(user.id)
-})
 
     } catch (error) {
         console.log(error)
@@ -84,4 +76,31 @@ const login = async (req , res) => {
 }
 
 
-module.exports = {signup , login}
+const getProfile = async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader) {
+            return res.status(401).json({ message: "token is missing" });
+        }
+
+        const token = authHeader.split(" ")[1];
+
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+        const user = await Users.findByPk(decoded.userId, {
+            attributes: ["id", "name", "email", "isPremium"]
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ user });
+    } catch (error) {
+        res.status(401).json({ message: "Invalid token", error: error.message });
+    }
+};
+
+
+module.exports = {signup , login, getProfile}

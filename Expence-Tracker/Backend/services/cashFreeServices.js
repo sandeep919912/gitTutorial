@@ -28,7 +28,7 @@ const createOrder = async(
             },
 
             "order_meta": {
-                "return_url": `http://localhost:5500/payments/verify?order_id=${orderId}`,
+                "return_url": `http://localhost:3000/payments/verify?order_id=${orderId}`,
                 "payment_methods": "cc,dc,upi"
             }
         };
