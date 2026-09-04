@@ -1,8 +1,7 @@
 const API_URL = "http://localhost:3000/expences";
 
-// ===============================
 // GET ALL EXPENSES
-// ===============================
+
 async function getExpenses() {
   try {
     const token = localStorage.getItem("token") || "";
@@ -24,8 +23,7 @@ async function getExpenses() {
     getUser();
     const isPremium = localStorage.getItem("isPremium");
     console.log(isPremium);
-    if(isPremium === "true") {
-
+    if (isPremium === "true") {
       document.getElementById("premiumBtn").textContent =
         "You are a Premium User!";
 
@@ -37,9 +35,9 @@ async function getExpenses() {
   }
 }
 
-// ===============================
+getExpenses();
 // ADD EXPENSE
-// ===============================
+
 async function handleAddExpense(event) {
   event.preventDefault();
 
@@ -81,9 +79,8 @@ async function handleAddExpense(event) {
   }
 }
 
-// ===============================
 // DISPLAY EXPENSES
-// ===============================
+
 function displayExpenses(expenses) {
   const expenseList = document.getElementById("expenseList");
   const totalExpense = document.getElementById("totalExpense");
@@ -125,9 +122,8 @@ function displayExpenses(expenses) {
   totalExpense.textContent = total;
 }
 
-// ===============================
 // DELETE EXPENSE
-// ===============================
+
 async function deleteExpense(id) {
   try {
     const response = await axios.delete(`${API_URL}/delete/${id}`);
@@ -164,10 +160,9 @@ const getUser = async () => {
 
     // console.log("User data:", data.user.id);
 
-    console.log(user.isPremium)
+    console.log(user.isPremium);
 
     localStorage.setItem("isPremium", user.isPremium);
-
   } catch (error) {
     console.error("Error fetching user data:", error);
   }
@@ -182,7 +177,6 @@ const cashfree = Cashfree({
 });
 
 premiumBtn.addEventListener("click", async () => {
-
   const res = await axios.post(
     `${API}/create-order`,
     {},
@@ -233,6 +227,10 @@ premiumBtn.addEventListener("click", async () => {
           },
         );
 
+        if (verifyRes.data.status === "SUCCESS") {
+          alert("Payment successful! You are now a premium user.");
+        }
+
         console.log("Payment verification result:", verifyRes.data);
       } catch (error) {
         console.log(
@@ -244,7 +242,56 @@ premiumBtn.addEventListener("click", async () => {
   });
 });
 
+const expencesBtn = document.querySelector("#forPremium");
+const leaderBoard = document.querySelector(".leaderboard");
 
+expencesBtn.addEventListener("click", async () => {
+  try {
+    const res = await axios.get(
+      "http://localhost:3000/leaderboard/get-all-user",
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      },
+    );
+
+    const allUserExpences = res.data.leaderBoard;
+
+    leaderBoard.textContent = "";
+
+    // Cross button
+    const closeBtn = document.createElement("button");
+    closeBtn.textContent = "×";
+    closeBtn.classList.add("close-leaderboard");
+
+    closeBtn.addEventListener("click", () => {
+      leaderBoard.style.display = "none";
+    });
+
+    leaderBoard.appendChild(closeBtn);
+
+    // Leaderboard users
+    allUserExpences.forEach((user, index) => {
+      const userDiv = document.createElement("div");
+
+      userDiv.innerHTML = `
+        <h3>${index + 1}. ${user.name}</h3>
+        <p>Total Expense: ₹${user.totalExpence}</p>
+      `;
+
+      leaderBoard.appendChild(userDiv);
+    });
+
+    // Show leaderboard
+    leaderBoard.style.display = "block";
+  } catch (error) {
+    alert(error.message);
+  }
+});
+// const getAllExpences = ()=> {
+
+// }
 
 // const token = localStorage.getItem("token");
 
@@ -293,4 +340,3 @@ premiumBtn.addEventListener("click", async () => {
 // ===============================
 // LOAD EXPENSES WHEN PAGE LOADS
 // ===============================
-getExpenses();

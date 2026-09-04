@@ -28,7 +28,7 @@ const createPayment = async (req, res) => {
     }
 
     const orderId = `ORDER_${userId}_${Date.now()}`;
-    console.log("Generated Order ID:", orderId);
+    // console.log("Generated Order ID:", orderId);
 
     const orderAmount = 599;
     const orderCurrency = "INR";

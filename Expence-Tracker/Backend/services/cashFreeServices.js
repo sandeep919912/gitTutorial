@@ -35,7 +35,7 @@ const createOrder = async(
 
         const response = await cashfree.PGCreateOrder(request)
 
-        console.log(response.data)
+        // console.log( "response from createorder line no 38" , response.data)
 
         return response.data
     } catch (error) {
