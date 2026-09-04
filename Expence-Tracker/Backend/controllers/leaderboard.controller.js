@@ -11,26 +11,10 @@ const leaderBoard = async (req, res) => {
             attributes: [
                 "id",
                 "name",
-                [
-                    fn("SUM", col("expences.productPrice")),
-                    "totalExpence"
-                ]
+                "totalExpense"
             ],
 
-            include: [
-                {
-                    model: Expences,
-                    attributes: []
-                }
-            ],
-
-            group: ["Users.id", "Users.name"],
-
-            order: [
-                ["totalExpence", "DESC"]
-            ],
-
-            raw: true
+            // raw: true
         });
 
         return res.status(200).json({

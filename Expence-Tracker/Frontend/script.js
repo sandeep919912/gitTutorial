@@ -277,7 +277,7 @@ expencesBtn.addEventListener("click", async () => {
 
       userDiv.innerHTML = `
         <h3>${index + 1}. ${user.name}</h3>
-        <p>Total Expense: ₹${user.totalExpence}</p>
+        <p>Total Expense: ₹${user.totalExpense}</p>
       `;
 
       leaderBoard.appendChild(userDiv);
