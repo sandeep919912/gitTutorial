@@ -94,10 +94,23 @@
         font-size: 28px;
         cursor: pointer;
       }
+
+      #askAI {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body class="bg-light">
-    <div class="container py-5">
+    <a class="container py-5">
       <div class="row justify-content-center">
         <div class="col-md-8">
           <div class="card shadow">
@@ -182,6 +195,8 @@
           </div>
         </div>
       </div>
+
+      <a href="genai.html"><button id="askAI">Ask AI</button></a>
     </div>
 
     <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>

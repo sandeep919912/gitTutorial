@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="text" id="question" placeholder="Ask your question to AI">
+    <button id="askButton">Ask AI</button>
+
+    <div id="answer"></div>
+
+    <script>
+        document.getElementById("askButton").addEventListener("click", async () => {
+            const question = document.getElementById("question").value;
+            const response = await fetch("http://localhost:3000/ai/ask", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ prompt: question })
+            });
+            const data = await response.json();
+            document.getElementById("answer").innerText = data.message;
+        });
+    </script>
+</body>
+</html>
