@@ -7,6 +7,7 @@ const cors = require("cors")
 const paymentRouter = require("./routes/payment.route")
 const leaderBoardRouter = require("./routes/leaderboard.route")
 const genaiRouter = require("./routes/genai.route")
+const resetRouter = require("./routes/reset-pass.route")
 
 //models
 require("./models/index")
@@ -16,12 +17,14 @@ require("./models/index")
 const app = express()
 app.use(cors())
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/expences" , expenceRouter)
 app.use("/users" , userRouter)
 app.use("/payments" , paymentRouter)
 app.use("/leaderboard" , leaderBoardRouter)
 app.use("/ai" , genaiRouter)
+app.use("/email" , resetRouter)
 
 
 sequelize.sync().then(()=>{

@@ -2,6 +2,7 @@ const Users = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Sib = require("sib-api-v3-sdk");
+const ResetPass = require("../models/resetpass.model")
 
 const signup = async (req, res) => {
   try {
@@ -104,7 +105,17 @@ const verifyEmail = async (req, res) => {
   try {
     const { email } = req.body;
 
-    console.log("Email received:", email);
+    const user = await Users.findOne({where:{
+      email
+    }})
+
+    console.log(user.id)
+
+    const request  = await ResetPass.create({
+      userId:user.id
+    })
+
+    
 
     const client = Sib.ApiClient.instance;
 
@@ -112,6 +123,7 @@ const verifyEmail = async (req, res) => {
     apiKey.apiKey = process.env.BREVO_API_KEY;
 
     const tranEmailApi = new Sib.TransactionalEmailsApi();
+
 
     const sender = {
       email: "sandeeppandit919912@gmail.com",
@@ -124,6 +136,8 @@ const verifyEmail = async (req, res) => {
       },
     ];
 
+    const resetUrl = `http://localhost:3000/email/resetpassword/${request.id}`
+
     const result = await tranEmailApi.sendTransacEmail({
       sender,
       to: receivers,
@@ -132,8 +146,8 @@ const verifyEmail = async (req, res) => {
         <h2>Forgot Password</h2>
         <p>Click the link below to reset your password.</p>
 
-        <a href="https://www.forgotpass.com">
-          Reset Password
+        <a href="${resetUrl}">
+          ${resetUrl}
         </a>
       `,
     });
