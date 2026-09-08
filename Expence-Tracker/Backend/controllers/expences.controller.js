@@ -92,6 +92,11 @@ const deleteExpences = async (req, res) => {
     }
 
     // Remove amount from user's totalExpense
+    // Delete expense
+    await Expences.destroy({
+      where: { id },
+      transaction: transaction,
+    });
 
     if (expense.productPrice >= 0) {
       await Users.decrement(
@@ -100,18 +105,14 @@ const deleteExpences = async (req, res) => {
       );
     }
 
-    // Delete expense
-    await Expences.destroy({
-      where: { id },
-      transaction: transaction,
-    });
 
+    await transaction.commit()
     res.status(200).json({
       message: `Expense with ${id} has been deleted`,
     });
   } catch (error) {
     console.log(error.message);
-
+    transaction.rollback()
     res.status(500).json({
       message: error.message,
     });

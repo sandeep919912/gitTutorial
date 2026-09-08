@@ -27,3 +27,18 @@ form.addEventListener("submit" , async (e)=>{
     email.value = ""
     password.value = ""
 })
+
+
+const dummyEmail = "lowokig793@crybio.com"
+const forgotBtn = document.querySelector(".forgotpass")
+
+forgotBtn.addEventListener("click" , async () => {
+    try {
+        console.log("clicked")
+
+        const res = await axios.post("http://localhost:3000/users/verify/email" , {email:dummyEmail})
+        console.log(res)
+    } catch (error) {
+        console.log(error)
+    }
+})
