@@ -49,7 +49,6 @@ const addExpences = async (req, res) => {
 
 
 const getExpencesForUser = async (req, res) => {
-
   try {
     const authHeader = req.headers.authorization;
 
@@ -65,15 +64,33 @@ const getExpencesForUser = async (req, res) => {
 
     const userId = decoded.userId;
 
-    const userExpences = await Expences.findAll({
+    // Pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 2;
+
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Expences.findAndCountAll({
       where: { userId },
+      limit,
+      offset,
+      order: [["createdAt", "DESC"]],
     });
 
-    // console.log("User Expenses:", userExpences);
+    res.status(200).json({
+      expenses: rows,
+      currentPage: page,
+      totalPages: Math.ceil(count / limit),
+      totalExpenses: count,
+      limit,
+    });
 
-    res.status(200).json(userExpences);
   } catch (error) {
     console.log(error.message);
+
+    res.status(500).json({
+      message: "Something went wrong",
+    });
   }
 };
 

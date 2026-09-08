@@ -1,8 +1,19 @@
 const API_URL = "http://localhost:3000/expences";
 
-// GET ALL EXPENSES
+// ==========================================
+// PAGINATION
+// ==========================================
 
-async function getExpenses() {
+let currentPage = 1;
+const limit = 2;
+let totalPages = 1;
+
+
+// ==========================================
+// GET ALL EXPENSES
+// ==========================================
+
+async function getExpenses(page = 1) {
   try {
     const token = localStorage.getItem("token") || "";
 
@@ -12,39 +23,122 @@ async function getExpenses() {
       return;
     }
 
-    const response = await axios.get(`${API_URL}/get`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const response = await axios.get(
+      `${API_URL}/get?page=${page}&limit=${limit}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-    console.log(response);
+    console.log("Response:", response.data);
 
-    getUser();
+    // Save pagination information
+    currentPage = response.data.currentPage;
+    totalPages = response.data.totalPages;
+
+    // Update pagination buttons
+    updatePagination();
+
+    // Get user
+    await getUser();
+
     const isPremium = localStorage.getItem("isPremium");
-    console.log(isPremium);
+
+    console.log("Premium:", isPremium);
+
     if (isPremium === "true") {
       document.getElementById("premiumBtn").textContent =
         "You are a Premium User!";
 
       document.getElementById("premiumBtn").disabled = true;
     }
-    displayExpenses(response.data);
+
+    // Display expenses
+    displayExpenses(response.data.expenses);
+
   } catch (error) {
     console.log(error.message);
   }
 }
 
+
+// ==========================================
+// UPDATE PAGINATION UI
+// ==========================================
+
+function updatePagination() {
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const pageNumber = document.getElementById("pageNumber");
+
+  pageNumber.textContent =
+    `Page ${currentPage} of ${totalPages}`;
+
+  // Previous button
+  prevBtn.disabled = currentPage === 1;
+
+  // Next button
+  nextBtn.disabled = currentPage === totalPages;
+}
+
+
+// ==========================================
+// PREVIOUS PAGE
+// ==========================================
+
+document
+  .getElementById("prevBtn")
+  .addEventListener("click", () => {
+
+    if (currentPage > 1) {
+      getExpenses(currentPage - 1);
+    }
+
+  });
+
+
+// ==========================================
+// NEXT PAGE
+// ==========================================
+
+document
+  .getElementById("nextBtn")
+  .addEventListener("click", () => {
+
+    if (currentPage < totalPages) {
+      getExpenses(currentPage + 1);
+    }
+
+  });
+
+
+// ==========================================
+// LOAD EXPENSES
+// ==========================================
+
 getExpenses();
+
+
+// ==========================================
 // ADD EXPENSE
+// ==========================================
 
 async function handleAddExpense(event) {
   event.preventDefault();
 
-  const productPrice = document.getElementById("expenseInput").value;
-  const description = document.getElementById("descriptionInput").value;
-  const category = document.getElementById("categorySelect").value;
-  const token = localStorage.getItem("token");
+  const productPrice =
+    document.getElementById("expenseInput").value;
+
+  const description =
+    document.getElementById("descriptionInput").value;
+
+  const category =
+    document.getElementById("categorySelect").value;
+
+  const token =
+    localStorage.getItem("token");
 
   if (!token) {
     alert("Please log in to add expenses.");
@@ -52,6 +146,7 @@ async function handleAddExpense(event) {
   }
 
   try {
+
     const response = await axios.post(
       "http://localhost:3000/expences/add",
       {
@@ -63,280 +158,434 @@ async function handleAddExpense(event) {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
 
-    const data = response.data;
+    console.log(response.data);
 
     // Clear form
-    document.getElementById("expenseForm").reset();
+    document
+      .getElementById("expenseForm")
+      .reset();
 
-    // Refresh expense list
-    getExpenses();
+    // Refresh current page
+    getExpenses(currentPage);
+
   } catch (error) {
+
     console.log(error.message);
     alert(error.message);
+
   }
 }
 
+
+// ==========================================
 // DISPLAY EXPENSES
+// ==========================================
 
 function displayExpenses(expenses) {
-  const expenseList = document.getElementById("expenseList");
-  const totalExpense = document.getElementById("totalExpense");
+
+  const expenseList =
+    document.getElementById("expenseList");
+
+  const totalExpense =
+    document.getElementById("totalExpense");
 
   expenseList.innerHTML = "";
 
   let total = 0;
 
+
   expenses.forEach((expense) => {
+
     total += Number(expense.productPrice);
 
-    const li = document.createElement("li");
+    const li =
+      document.createElement("li");
 
     li.className =
       "list-group-item d-flex justify-content-between align-items-center";
 
-    li.innerHTML = `
-            <div>
-                <strong>₹${expense.productPrice}</strong>
-                <br>
-                <small>${expense.description}</small>
-                <br>
-                <span class="badge bg-secondary">
-                    ${expense.category}
-                </span>
-            </div>
 
-            <button
-                class="btn btn-danger btn-sm"
-                onclick="deleteExpense(${expense.id})"
-            >
-                Delete
-            </button>
-        `;
+    li.innerHTML = `
+      <div>
+        <strong>₹${expense.productPrice}</strong>
+
+        <br>
+
+        <small>
+          ${expense.description}
+        </small>
+
+        <br>
+
+        <span class="badge bg-secondary">
+          ${expense.category}
+        </span>
+      </div>
+
+      <button
+        class="btn btn-danger btn-sm"
+        onclick="deleteExpense(${expense.id})"
+      >
+        Delete
+      </button>
+    `;
+
 
     expenseList.appendChild(li);
+
   });
+
 
   totalExpense.textContent = total;
 }
 
+
+// ==========================================
 // DELETE EXPENSE
+// ==========================================
 
 async function deleteExpense(id) {
+
   try {
-    const response = await axios.delete(`${API_URL}/delete/${id}`);
 
-    const data = response.data;
+    const response = await axios.delete(
+      `${API_URL}/delete/${id}`,
+      {
+        headers: {
+          Authorization:
+            `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
 
-    console.log(data);
+    console.log(response.data);
 
-    // Refresh list
-    getExpenses();
+    // Refresh current page
+    getExpenses(currentPage);
+
   } catch (error) {
+
     console.log(error.message);
     alert(error.message);
+
   }
 }
 
+
+// ==========================================
+// GET USER
+// ==========================================
+
 const getUser = async () => {
+
   try {
-    const token = localStorage.getItem("token");
+
+    const token =
+      localStorage.getItem("token");
 
     if (!token) {
-      window.location.href = "login.html";
-      alert("Please log in to access this page.");
+
+      window.location.href =
+        "login.html";
+
+      alert(
+        "Please log in to access this page."
+      );
+
       return;
     }
 
-    const response = await axios.get("http://localhost:3000/users/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
 
-    const user = response.data.user;
+    const response = await axios.get(
+      "http://localhost:3000/users/me",
+      {
+        headers: {
+          Authorization:
+            `Bearer ${token}`,
+        },
+      }
+    );
 
-    // console.log("User data:", data.user.id);
 
-    console.log(user.isPremium);
+    const user =
+      response.data.user;
 
-    localStorage.setItem("isPremium", user.isPremium);
+    console.log(
+      "Premium status:",
+      user.isPremium
+    );
+
+
+    localStorage.setItem(
+      "isPremium",
+      user.isPremium
+    );
+
   } catch (error) {
-    console.error("Error fetching user data:", error);
+
+    console.error(
+      "Error fetching user data:",
+      error
+    );
+
   }
 };
 
-const API = "http://localhost:3000/payments";
 
-const premiumBtn = document.querySelector("#premiumBtn");
+// ==========================================
+// CASHFREE PAYMENT
+// ==========================================
 
-const cashfree = Cashfree({
-  mode: "sandbox",
-});
+const API =
+  "http://localhost:3000/payments";
 
-premiumBtn.addEventListener("click", async () => {
-  const res = await axios.post(
-    `${API}/create-order`,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    },
-  );
+const premiumBtn =
+  document.querySelector("#premiumBtn");
 
-  // console.log("Backend response:", res.data.paymentSessionId);
 
-  let checkoutOptions = {
-    paymentSessionId: res.data.paymentSessionId,
-    redirectTarget: "_modal",
-  };
-  cashfree.checkout(checkoutOptions).then(async (result) => {
-    if (result.error) {
-      // This will be true whenever user clicks on close icon inside the modal or any error happens during the payment
-      console.log(
-        "User has closed the popup or there is some payment error, Check for Payment Status",
-      );
-      console.log(result.error);
-    }
-    if (result.redirect) {
-      // This will be true when the payment redirection page couldnt be opened in the same window
-      // This is an exceptional case only when the page is opened inside an inAppBrowser
-      // In this case the customer will be redirected to return url once payment is completed
-      console.log("Payment will be redirected");
-    }
-    if (result.paymentDetails) {
-      // This will be called whenever the payment is completed irrespective of transaction status
-      console.log("Payment has been completed, Check for Payment Status");
-      console.log(result.paymentDetails.paymentMessage);
+const cashfree =
+  Cashfree({
+    mode: "sandbox",
+  });
 
-      // Actually verify with our backend so the order status gets updated in the DB
-      try {
-        const verifyRes = await axios.post(
-          `${API}/verify`,
+
+premiumBtn.addEventListener(
+  "click",
+  async () => {
+
+    try {
+
+      const res =
+        await axios.post(
+          `${API}/create-order`,
           {},
           {
-            params: {
-              order_id: res.data.orderId,
-            },
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization:
+                `Bearer ${localStorage.getItem("token")}`,
             },
-          },
+          }
         );
 
-        if (verifyRes.data.status === "SUCCESS") {
-          alert("Payment successful! You are now a premium user.");
-        }
 
-        console.log("Payment verification result:", verifyRes.data);
-      } catch (error) {
-        console.log(
-          "Payment verification failed:",
-          error.response?.data || error.message,
-        );
-      }
+      const checkoutOptions = {
+        paymentSessionId:
+          res.data.paymentSessionId,
+
+        redirectTarget: "_modal",
+      };
+
+
+      cashfree
+        .checkout(checkoutOptions)
+        .then(async (result) => {
+
+          if (result.error) {
+
+            console.log(
+              "User closed the popup or payment error",
+              result.error
+            );
+
+          }
+
+
+          if (result.redirect) {
+
+            console.log(
+              "Payment will be redirected"
+            );
+
+          }
+
+
+          if (result.paymentDetails) {
+
+            console.log(
+              "Payment completed"
+            );
+
+            console.log(
+              result.paymentDetails.paymentMessage
+            );
+
+
+            try {
+
+              const verifyRes =
+                await axios.post(
+                  `${API}/verify`,
+                  {},
+                  {
+                    params: {
+                      order_id:
+                        res.data.orderId,
+                    },
+
+                    headers: {
+                      Authorization:
+                        `Bearer ${localStorage.getItem("token")}`,
+                    },
+                  }
+                );
+
+
+              if (
+                verifyRes.data.status ===
+                "SUCCESS"
+              ) {
+
+                alert(
+                  "Payment successful! You are now a premium user."
+                );
+
+                localStorage.setItem(
+                  "isPremium",
+                  "true"
+                );
+
+                premiumBtn.textContent =
+                  "You are a Premium User!";
+
+                premiumBtn.disabled = true;
+              }
+
+
+              console.log(
+                "Payment verification result:",
+                verifyRes.data
+              );
+
+            } catch (error) {
+
+              console.log(
+                "Payment verification failed:",
+                error.response?.data ||
+                error.message
+              );
+
+            }
+
+          }
+
+        });
+
+    } catch (error) {
+
+      console.log(
+        error.response?.data ||
+        error.message
+      );
+
     }
-  });
-});
 
-const expencesBtn = document.querySelector("#forPremium");
-const leaderBoard = document.querySelector(".leaderboard");
-
-expencesBtn.addEventListener("click", async () => {
-  try {
-    const res = await axios.get(
-      "http://localhost:3000/leaderboard/get-all-user",
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      },
-    );
-
-    const allUserExpences = res.data.leaderBoard;
-
-    leaderBoard.textContent = "";
-
-    // Cross button
-    const closeBtn = document.createElement("button");
-    closeBtn.textContent = "×";
-    closeBtn.classList.add("close-leaderboard");
-
-    closeBtn.addEventListener("click", () => {
-      leaderBoard.style.display = "none";
-    });
-
-    leaderBoard.appendChild(closeBtn);
-
-    // Leaderboard users
-    allUserExpences.forEach((user, index) => {
-      const userDiv = document.createElement("div");
-
-      userDiv.innerHTML = `
-        <h3>${index + 1}. ${user.name}</h3>
-        <p>Total Expense: ₹${user.totalExpense}</p>
-      `;
-
-      leaderBoard.appendChild(userDiv);
-    });
-
-    // Show leaderboard
-    leaderBoard.style.display = "block";
-  } catch (error) {
-    alert(error.message);
   }
-});
-// const getAllExpences = ()=> {
+);
 
-// }
 
-// const token = localStorage.getItem("token");
+// ==========================================
+// LEADERBOARD
+// ==========================================
 
-// const cashfree = Cashfree({
-//     mode: "sandbox"
-// });
+const expencesBtn =
+  document.querySelector("#forPremium");
 
-// premiumBtn.addEventListener("click", async () => {
+const leaderBoard =
+  document.querySelector(".leaderboard");
 
-//     try {
 
-//         // 1. Ask our backend to create a Cashfree order
-//         const res = await axios.post(
-//             `${API}/create-order`,
-//             {},
-//             {
-//                 headers: {
-//                     Authorization: `Bearer ${token}`
-//                 }
-//             }
-//         );
+expencesBtn.addEventListener(
+  "click",
+  async () => {
 
-//         console.log("Backend response:", res.data);
+    try {
 
-//         // 2. Get payment session ID
-//         const paymentSessionId = res.data.paymentSessionId;
+      const res =
+        await axios.get(
+          "http://localhost:3000/leaderboard/get-all-user",
+          {
+            headers: {
+              Authorization:
+                `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
-//         // 3. Open Cashfree checkout
-//         const result = await cashfree.checkout({
-//             paymentSessionId: paymentSessionId,
-//             redirectTarget: "_modal"
-//         });
 
-//         console.log("Checkout result:", result);
+      const allUserExpences =
+        res.data.leaderBoard;
 
-//     } catch (error) {
 
-//         console.log(
-//             error.response?.data || error.message
-//         );
+      leaderBoard.textContent = "";
 
-//     }
 
-// });
+      // Close button
+      const closeBtn =
+        document.createElement("button");
 
-// ===============================
-// LOAD EXPENSES WHEN PAGE LOADS
-// ===============================
+      closeBtn.textContent = "×";
+
+      closeBtn.classList.add(
+        "close-leaderboard"
+      );
+
+
+      closeBtn.addEventListener(
+        "click",
+        () => {
+
+          leaderBoard.style.display =
+            "none";
+
+        }
+      );
+
+
+      leaderBoard.appendChild(
+        closeBtn
+      );
+
+
+      // Leaderboard users
+      allUserExpences.forEach(
+        (user, index) => {
+
+          const userDiv =
+            document.createElement("div");
+
+
+          userDiv.innerHTML = `
+            <h3>
+              ${index + 1}. ${user.name}
+            </h3>
+
+            <p>
+              Total Expense:
+              ₹${user.totalExpense}
+            </p>
+          `;
+
+
+          leaderBoard.appendChild(
+            userDiv
+          );
+
+        }
+      );
+
+
+      // Show leaderboard
+      leaderBoard.style.display =
+        "block";
+
+    } catch (error) {
+
+      alert(error.message);
+
+    }
+
+  }
+);
