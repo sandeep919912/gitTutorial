@@ -47,8 +47,9 @@ const addExpences = async (req, res) => {
   }
 };
 
+
 const getExpencesForUser = async (req, res) => {
-  
+
   try {
     const authHeader = req.headers.authorization;
 
