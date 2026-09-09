@@ -1,17 +1,9 @@
 const API_URL = "http://localhost:3000/expences";
 
-// ==========================================
-// PAGINATION
-// ==========================================
+const select = document.querySelector(".row-options");
 
 let currentPage = 1;
-const limit = 2;
 let totalPages = 1;
-
-
-// ==========================================
-// GET ALL EXPENSES
-// ==========================================
 
 async function getExpenses(page = 1) {
   try {
@@ -22,6 +14,8 @@ async function getExpenses(page = 1) {
       alert("Please log in to add expenses.");
       return;
     }
+
+    const limit = Number(select.value);
 
     const response = await axios.get(
       `${API_URL}/get?page=${page}&limit=${limit}`,
@@ -34,14 +28,11 @@ async function getExpenses(page = 1) {
 
     console.log("Response:", response.data);
 
-    // Save pagination information
     currentPage = response.data.currentPage;
     totalPages = response.data.totalPages;
 
-    // Update pagination buttons
     updatePagination();
 
-    // Get user
     await getUser();
 
     const isPremium = localStorage.getItem("isPremium");
@@ -55,7 +46,6 @@ async function getExpenses(page = 1) {
       document.getElementById("premiumBtn").disabled = true;
     }
 
-    // Display expenses
     displayExpenses(response.data.expenses);
 
   } catch (error) {
@@ -63,67 +53,35 @@ async function getExpenses(page = 1) {
   }
 }
 
-
-// ==========================================
-// UPDATE PAGINATION UI
-// ==========================================
+select.addEventListener("change", () => {
+  currentPage = 1;
+  getExpenses(1);
+});
 
 function updatePagination() {
   const prevBtn = document.getElementById("prevBtn");
   const nextBtn = document.getElementById("nextBtn");
   const pageNumber = document.getElementById("pageNumber");
 
-  pageNumber.textContent =
-    `Page ${currentPage} of ${totalPages}`;
+  pageNumber.textContent = `Page ${currentPage} of ${totalPages}`;
 
-  // Previous button
   prevBtn.disabled = currentPage === 1;
-
-  // Next button
   nextBtn.disabled = currentPage === totalPages;
 }
 
+document.getElementById("prevBtn").addEventListener("click", () => {
+  if (currentPage > 1) {
+    getExpenses(currentPage - 1);
+  }
+});
 
-// ==========================================
-// PREVIOUS PAGE
-// ==========================================
-
-document
-  .getElementById("prevBtn")
-  .addEventListener("click", () => {
-
-    if (currentPage > 1) {
-      getExpenses(currentPage - 1);
-    }
-
-  });
-
-
-// ==========================================
-// NEXT PAGE
-// ==========================================
-
-document
-  .getElementById("nextBtn")
-  .addEventListener("click", () => {
-
-    if (currentPage < totalPages) {
-      getExpenses(currentPage + 1);
-    }
-
-  });
-
-
-// ==========================================
-// LOAD EXPENSES
-// ==========================================
+document.getElementById("nextBtn").addEventListener("click", () => {
+  if (currentPage < totalPages) {
+    getExpenses(currentPage + 1);
+  }
+});
 
 getExpenses();
-
-
-// ==========================================
-// ADD EXPENSE
-// ==========================================
 
 async function handleAddExpense(event) {
   event.preventDefault();
@@ -137,8 +95,7 @@ async function handleAddExpense(event) {
   const category =
     document.getElementById("categorySelect").value;
 
-  const token =
-    localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   if (!token) {
     alert("Please log in to add expenses.");
@@ -146,7 +103,6 @@ async function handleAddExpense(event) {
   }
 
   try {
-
     const response = await axios.post(
       "http://localhost:3000/expences/add",
       {
@@ -163,29 +119,17 @@ async function handleAddExpense(event) {
 
     console.log(response.data);
 
-    // Clear form
-    document
-      .getElementById("expenseForm")
-      .reset();
+    document.getElementById("expenseForm").reset();
 
-    // Refresh current page
     getExpenses(currentPage);
 
   } catch (error) {
-
     console.log(error.message);
     alert(error.message);
-
   }
 }
 
-
-// ==========================================
-// DISPLAY EXPENSES
-// ==========================================
-
 function displayExpenses(expenses) {
-
   const expenseList =
     document.getElementById("expenseList");
 
@@ -196,30 +140,20 @@ function displayExpenses(expenses) {
 
   let total = 0;
 
-
   expenses.forEach((expense) => {
-
     total += Number(expense.productPrice);
 
-    const li =
-      document.createElement("li");
+    const li = document.createElement("li");
 
     li.className =
       "list-group-item d-flex justify-content-between align-items-center";
 
-
     li.innerHTML = `
       <div>
         <strong>₹${expense.productPrice}</strong>
-
         <br>
-
-        <small>
-          ${expense.description}
-        </small>
-
+        <small>${expense.description}</small>
         <br>
-
         <span class="badge bg-secondary">
           ${expense.category}
         </span>
@@ -233,24 +167,14 @@ function displayExpenses(expenses) {
       </button>
     `;
 
-
     expenseList.appendChild(li);
-
   });
-
 
   totalExpense.textContent = total;
 }
 
-
-// ==========================================
-// DELETE EXPENSE
-// ==========================================
-
 async function deleteExpense(id) {
-
   try {
-
     const response = await axios.delete(
       `${API_URL}/delete/${id}`,
       {
@@ -263,33 +187,20 @@ async function deleteExpense(id) {
 
     console.log(response.data);
 
-    // Refresh current page
     getExpenses(currentPage);
 
   } catch (error) {
-
     console.log(error.message);
     alert(error.message);
-
   }
 }
 
-
-// ==========================================
-// GET USER
-// ==========================================
-
 const getUser = async () => {
-
   try {
-
-    const token =
-      localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
     if (!token) {
-
-      window.location.href =
-        "login.html";
+      window.location.href = "login.html";
 
       alert(
         "Please log in to access this page."
@@ -297,7 +208,6 @@ const getUser = async () => {
 
       return;
     }
-
 
     const response = await axios.get(
       "http://localhost:3000/users/me",
@@ -309,15 +219,12 @@ const getUser = async () => {
       }
     );
 
-
-    const user =
-      response.data.user;
+    const user = response.data.user;
 
     console.log(
       "Premium status:",
       user.isPremium
     );
-
 
     localStorage.setItem(
       "isPremium",
@@ -325,51 +232,39 @@ const getUser = async () => {
     );
 
   } catch (error) {
-
     console.error(
       "Error fetching user data:",
       error
     );
-
   }
 };
 
+//cashfreee
 
-// ==========================================
-// CASHFREE PAYMENT
-// ==========================================
-
-const API =
-  "http://localhost:3000/payments";
+const API = "http://localhost:3000/payments";
 
 const premiumBtn =
   document.querySelector("#premiumBtn");
-
 
 const cashfree =
   Cashfree({
     mode: "sandbox",
   });
 
-
 premiumBtn.addEventListener(
   "click",
   async () => {
-
     try {
-
-      const res =
-        await axios.post(
-          `${API}/create-order`,
-          {},
-          {
-            headers: {
-              Authorization:
-                `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-
+      const res = await axios.post(
+        `${API}/create-order`,
+        {},
+        {
+          headers: {
+            Authorization:
+              `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       const checkoutOptions = {
         paymentSessionId:
@@ -378,32 +273,24 @@ premiumBtn.addEventListener(
         redirectTarget: "_modal",
       };
 
-
       cashfree
         .checkout(checkoutOptions)
         .then(async (result) => {
 
           if (result.error) {
-
             console.log(
               "User closed the popup or payment error",
               result.error
             );
-
           }
 
-
           if (result.redirect) {
-
             console.log(
               "Payment will be redirected"
             );
-
           }
 
-
           if (result.paymentDetails) {
-
             console.log(
               "Payment completed"
             );
@@ -412,9 +299,7 @@ premiumBtn.addEventListener(
               result.paymentDetails.paymentMessage
             );
 
-
             try {
-
               const verifyRes =
                 await axios.post(
                   `${API}/verify`,
@@ -432,12 +317,10 @@ premiumBtn.addEventListener(
                   }
                 );
 
-
               if (
                 verifyRes.data.status ===
                 "SUCCESS"
               ) {
-
                 alert(
                   "Payment successful! You are now a premium user."
                 );
@@ -453,42 +336,29 @@ premiumBtn.addEventListener(
                 premiumBtn.disabled = true;
               }
 
-
               console.log(
                 "Payment verification result:",
                 verifyRes.data
               );
 
             } catch (error) {
-
               console.log(
                 "Payment verification failed:",
                 error.response?.data ||
                 error.message
               );
-
             }
-
           }
-
         });
 
     } catch (error) {
-
       console.log(
         error.response?.data ||
         error.message
       );
-
     }
-
   }
 );
-
-
-// ==========================================
-// LEADERBOARD
-// ==========================================
 
 const expencesBtn =
   document.querySelector("#forPremium");
@@ -496,33 +366,25 @@ const expencesBtn =
 const leaderBoard =
   document.querySelector(".leaderboard");
 
-
 expencesBtn.addEventListener(
   "click",
   async () => {
-
     try {
-
-      const res =
-        await axios.get(
-          "http://localhost:3000/leaderboard/get-all-user",
-          {
-            headers: {
-              Authorization:
-                `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-
+      const res = await axios.get(
+        "http://localhost:3000/leaderboard/get-all-user",
+        {
+          headers: {
+            Authorization:
+              `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       const allUserExpences =
         res.data.leaderBoard;
 
-
       leaderBoard.textContent = "";
 
-
-      // Close button
       const closeBtn =
         document.createElement("button");
 
@@ -532,30 +394,21 @@ expencesBtn.addEventListener(
         "close-leaderboard"
       );
 
-
       closeBtn.addEventListener(
         "click",
         () => {
-
           leaderBoard.style.display =
             "none";
-
         }
       );
 
+      leaderBoard.appendChild(closeBtn);
 
-      leaderBoard.appendChild(
-        closeBtn
-      );
-
-
-      // Leaderboard users
       allUserExpences.forEach(
         (user, index) => {
 
           const userDiv =
             document.createElement("div");
-
 
           userDiv.innerHTML = `
             <h3>
@@ -568,24 +421,15 @@ expencesBtn.addEventListener(
             </p>
           `;
 
-
-          leaderBoard.appendChild(
-            userDiv
-          );
-
+          leaderBoard.appendChild(userDiv);
         }
       );
 
-
-      // Show leaderboard
       leaderBoard.style.display =
         "block";
 
     } catch (error) {
-
       alert(error.message);
-
     }
-
   }
 );

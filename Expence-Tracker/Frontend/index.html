@@ -118,6 +118,11 @@
         border-radius: 5px;
         cursor: pointer;
       }
+
+      .history{
+        display: flex;
+        justify-content: space-between;
+      }
     </style>
   </head>
 
@@ -259,9 +264,17 @@
           <div class="card shadow mt-4">
             <div class="card-body">
 
-              <h3 class="mb-3">
+             <div class="history">
+               <h3 class="mb-3">
                 Expense History
               </h3>
+
+              <h6>select raws : <select class="row-options">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select></h6>
+             </div>
 
               <ul
                 id="expenseList"
