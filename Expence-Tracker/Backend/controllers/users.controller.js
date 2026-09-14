@@ -115,15 +115,12 @@ const verifyEmail = async (req, res) => {
       userId:user.id
     })
 
-    
-
     const client = Sib.ApiClient.instance;
 
     const apiKey = client.authentications["api-key"];
     apiKey.apiKey = process.env.BREVO_API_KEY;
 
     const tranEmailApi = new Sib.TransactionalEmailsApi();
-
 
     const sender = {
       email: "sandeeppandit919912@gmail.com",
